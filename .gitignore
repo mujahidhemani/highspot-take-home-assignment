@@ -142,5 +142,10 @@ tags
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+*.code-workspace
+
+### SQLite3 ###
+# Ignore SQLite3 DBs
+*.db
 
 # End of https://www.gitignore.io/api/vim,python,visualstudiocode

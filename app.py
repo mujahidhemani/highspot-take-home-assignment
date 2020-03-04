@@ -2,10 +2,11 @@ from flask import Flask, request, jsonify, g
 import random
 import sqlite3
 from sqlite3 import Error
+from healthcheck import HealthCheck
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-
+health = HealthCheck(app, "/healthcheck")  # Define healthcheck endpoint
 DATABASE = "database.db"
 
 
@@ -22,6 +23,15 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
+
+# SQLite3 DB healthcheck
+def sqlite3_available():
+    db = get_db()
+    if db is not None:
+        return True, "sqlite3 ok"
+    else:
+        return False, "sqlite3 not ok"
 
 
 # Creates the DB and table if it doesn't already exist
@@ -76,7 +86,7 @@ def uri_endpoint():
                                 (endpoint_id,), one=True)
             return jsonify({'post_data': post_data})
         elif request.method == 'POST':
-            data = str(request.get_json())
+            data = str(request.get_json())  # must cast the incoming data to string to store in the DB
             query_db('update highspot_app set post_data = ? where endpoint_id = ?',
                     (data, endpoint_id))
             db = get_db()
@@ -102,3 +112,4 @@ def generate_uri():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=8080)
+    health.add_check(sqlite3_available)

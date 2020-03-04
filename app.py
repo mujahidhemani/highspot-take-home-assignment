@@ -91,11 +91,18 @@ def uri_endpoint():
                     (data, endpoint_id))
             db = get_db()
             db.commit()
-            return jsonify({'request': data}), 200
+            return jsonify({'request': data})
     else:
         return jsonify({
             'error': 'endpoint does not exist'
             }), 404
+
+
+# Returns the latest submitted POST data from the database
+@app.route('/api/v1/resources/endpoint/latest', methods=['GET'])
+def get_latest():
+    post_data = query_db('SELECT post_data FROM highspot_app WHERE post_data IS NOT NULL ORDER by post_timestamp DESC LIMIT 1', (), one=True)
+    return jsonify({'post_data': post_data})
 
 
 # Generates a service endpoint that can store POST data to the database

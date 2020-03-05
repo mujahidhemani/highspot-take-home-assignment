@@ -112,12 +112,10 @@ def get_latest():
 def generate_uri():
     value = random.randint(1000, 9999)  # Random generated number that will service as the endpoint id
     uri = "/api/v1/resources/endpoint?id=" + str(value)  # construct the URI
-    if query_db('INSERT INTO highspot_app (endpoint_id) VALUES (?)', (value,)):
-        db = get_db()
-        db.commit()
-        return jsonify({'uri': uri}), 201
-    else:
-        return jsonify({'error': 'internal server error, could not create endpoint resource'}), 500
+    query_db('INSERT INTO highspot_app (endpoint_id) VALUES (?)', (value,))
+    db = get_db()
+    db.commit()
+    return jsonify({'uri': uri}), 201
 
 
 if __name__ == '__main__':

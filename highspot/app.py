@@ -5,7 +5,7 @@ from sqlite3 import Error
 from healthcheck import HealthCheck
 
 app = Flask("highspot")
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 health = HealthCheck(app, "/healthcheck")  # Define healthcheck endpoint
 DATABASE = "database.db"
 
@@ -65,7 +65,7 @@ def get_endpoint(endpoint_id):
 # Home page
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Highspot API App</h1><p>Documentation: <a href=\"url\">http://shorturl.at/lsTU8</a></p>"
+    return "<h1>Highspot API App</h1><p>Documentation: <a href=http://shorturl.at/lsTU8>http://shorturl.at/lsTU8</a></p>"
 
 
 # Read post data from a generated service endpoint

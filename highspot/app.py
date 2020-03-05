@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import Error
 from healthcheck import HealthCheck
 
-app = Flask(__name__)
+app = Flask("highspot")
 app.config["DEBUG"] = True
 health = HealthCheck(app, "/healthcheck")  # Define healthcheck endpoint
 DATABASE = "database.db"
@@ -74,10 +74,6 @@ def home():
 # Else, if POST, store the data in the database
 @app.route('/api/v1/resources/endpoint', methods=['GET', 'POST'])
 def uri_endpoint():
-    if request.content_type != 'application/json':
-        return jsonify({
-            'error': 'invalid content-type. must be application/json'
-        }), 415
     query_parameters = request.args
     endpoint_id = query_parameters.get('id', type=int)
     if get_endpoint(endpoint_id):
@@ -86,12 +82,18 @@ def uri_endpoint():
                                 (endpoint_id,), one=True)
             return jsonify({'post_data': post_data})
         elif request.method == 'POST':
+            if request.content_type != 'application/json':  # check content-type header, must be application/json!
+                return jsonify({
+                        'error': 'invalid content-type. must be application/json'
+                    }), 415
             data = str(request.get_json())  # must cast the incoming data to string to store in the DB
-            query_db('update highspot_app set post_data = ? where endpoint_id = ?',
-                    (data, endpoint_id))
-            db = get_db()
-            db.commit()
-            return jsonify({'request': data})
+            if query_db('update highspot_app set post_data = ? where endpoint_id = ?',
+                    (data, endpoint_id)):
+                db = get_db()
+                db.commit()
+                return jsonify({'request': data})
+            else:
+                return jsonify({'error': 'internal server error, could not save POST data to specified endpoint'}), 500
     else:
         return jsonify({
             'error': 'endpoint does not exist'
@@ -108,12 +110,14 @@ def get_latest():
 # Generates a service endpoint that can store POST data to the database
 @app.route('/api/v1/resources/endpoint/gen', methods=['GET'])
 def generate_uri():
-    value = random.randint(1000, 9999)
+    value = random.randint(1000, 9999)  # Random generated number that will service as the endpoint id
     uri = "/api/v1/resources/endpoint?id=" + str(value)  # construct the URI
-    query_db('INSERT INTO highspot_app (endpoint_id) VALUES (?)', (value,))
-    db = get_db()
-    db.commit()
-    return jsonify({'uri': uri}), 201
+    if query_db('INSERT INTO highspot_app (endpoint_id) VALUES (?)', (value,)):
+        db = get_db()
+        db.commit()
+        return jsonify({'uri': uri}), 201
+    else:
+        return jsonify({'error': 'internal server error, could not create endpoint resource'}), 500
 
 
 if __name__ == '__main__':

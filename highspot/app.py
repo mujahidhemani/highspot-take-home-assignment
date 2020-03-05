@@ -87,13 +87,11 @@ def uri_endpoint():
                         'error': 'invalid content-type. must be application/json'
                     }), 415
             data = str(request.get_json())  # must cast the incoming data to string to store in the DB
-            if query_db('update highspot_app set post_data = ? where endpoint_id = ?',
-                    (data, endpoint_id)):
-                db = get_db()
-                db.commit()
-                return jsonify({'request': data})
-            else:
-                return jsonify({'error': 'internal server error, could not save POST data to specified endpoint'}), 500
+            query_db('update highspot_app set post_data = ? where endpoint_id = ?',
+                    (data, endpoint_id))
+            db = get_db()
+            db.commit()
+            return jsonify({'request': data})
     else:
         return jsonify({
             'error': 'endpoint does not exist'

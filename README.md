@@ -6,9 +6,9 @@ This Flask service will store the contents of a POST request made to an `endpoin
 - Make
 
 ## Python Dependencies
-- Flask         Python WSGI web application framework
-- healthcheck   Healthcheck library by Runscope
-- six           A dependency of healthcheck, for some reason not installed automatically
+- Flask        - Python WSGI web application framework
+- healthcheck  - Healthcheck library by Runscope
+- six          - A dependency of healthcheck, for some reason not installed automatically
 
 ## Development
 If you want to build and run locally for development, you will also need Python 3.7 installed. A dedicated Python virtual environment is highly recommended to isolate Python dependencies from your system's Python installation and from other Python projects
@@ -26,13 +26,13 @@ Once inside your new venv, you should be able to `pip install -r requirements.tx
 ```
 
 ## Makefile
-- `all` - Runs `build`, `init-db` and `run`. This is the default target, so when you run `make` in your shell, it will execute this target
-- `build` - Builds Docker image
+- `all`     - Runs `build`, `init-db` and `run`. This is the default target, so when you run `make` in your shell, it will execute this target
+- `build`   - Builds Docker image
 - `init-db` - Creates the database file using `touch`
-- `run` - Starts the Docker container, mounts the database file to the container, maps port 8080 to the container
-- `stop` - Stops and removes the container
-- `rm-db` - Removes the database file ** This is a destructive operation! **
-- `clean` - Removes the built Docker image
+- `run`     - Starts the Docker container, mounts the database file to the container, maps port 8080 to the container
+- `stop`    - Stops and removes the container
+- `rm-db`   - Removes the database file ** This is a destructive operation! **
+- `clean`   - Removes the built Docker image
 
 ## Usage
 NOTE: Only `Content-Type: application/json` is supported!

@@ -5,7 +5,7 @@ build:
 init-db:
 	@echo "Creating database file..."
 	@touch database.db
-run: stop
+run:
 	@echo "Starting Docker container"
 	@docker run -d --mount type=bind,source="$$(pwd)"/database.db,target=/app/database.db -p 8080:8080 --name highspot highspot:latest
 stop:

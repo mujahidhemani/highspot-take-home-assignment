@@ -136,10 +136,12 @@ NOTE: Only `Content-Type: application/json` is supported!
 - `make` is awesome. This should help developers build and test the service quickly, as they don't have to worry about the underlying Docker commands.
 - The database is mounted to the container from local disk. This makes it persistent, otherwise it would be lost when stopping & deleting the container
 - The API is structured as `/api/v1/resources/<resource>`. Currently there is just one resource: `endpoint`, but this structure allows a developer to add new resources, with their own methods. It also allows you to increment the version of the API without breaking existing resources.
+- In the Docker file, the requirements.txt file is copied first to take advantage of Docker caching. This helps speed up container build times
 
 - Random number generation is used to create the ID of the `endpoint` resource. There is a finite range of numbers in the range (1000-9999), this should be refactored to autoincrement in the DB schema
 - The service may not be returning an entirely JSON-friendly response when retriving the latest POST or a particular endpoint's POST data. Some additional tweaking might be required to strip some of the uneccessary quotes from the JSON response. 
 - Using SQL language queries from within the web service makes it vulnerable to SQL injection attacks. Either need to add some functionality to sanitize inputs, or refactor using SQLAlchemy to abstract the SQL queries
+- A simple healthcheck was added to monitor the SQLite database, might need to add another healthcheck to monitor database query times. 
 
 ## TODO
 - Fix API responses when retrieving POST body from the database. Looks like there are some unneccessary quotes in the JSON response that need to be stripped/fixed
@@ -147,4 +149,3 @@ NOTE: Only `Content-Type: application/json` is supported!
 - Protection against SQL injections - Need to sanitize inputs or refactor using something like SQLAlchemy
 - Error handling - There is currently no error handling, stack traces are thrown directly to the console
 - CI/CD - This should be fairly easy to setup on CircleCI, dependent on unit tests. Ideally this should deploy to a container registry like Docker Hub
-
